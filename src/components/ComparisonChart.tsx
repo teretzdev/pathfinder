@@ -21,20 +21,24 @@ interface ComparisonChartProps {
 
 const ComparisonChart: React.FC<ComparisonChartProps> = ({ chart1Data, chart2Data, labels }) => {
   // Chart data
+  const primaryColor = '#4f46e5';
+  const secondaryColor = '#22d3ee';
+  const gridColor = '#3f3f3f';
+
   const data = {
     labels,
     datasets: [
       {
         label: 'Chart 1',
         data: chart1Data,
-        borderColor: '#4f46e5', // Primary color
+        borderColor: primaryColor,
         backgroundColor: 'rgba(79, 70, 229, 0.2)',
         tension: 0.4,
       },
       {
         label: 'Chart 2',
         data: chart2Data,
-        borderColor: '#22d3ee', // Secondary color
+        borderColor: secondaryColor,
         backgroundColor: 'rgba(34, 211, 238, 0.2)',
         tension: 0.4,
       },
@@ -53,7 +57,8 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({ chart1Data, chart2Dat
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => `${context.dataset.label}: ${context.raw.toFixed(2)}`,
+          label: (context: { dataset: { label: string }; raw: number }) =>
+            `${context.dataset.label}: ${context.raw.toFixed(2)}`,
         },
       },
     },
@@ -78,7 +83,10 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({ chart1Data, chart2Dat
   };
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+    <div
+      className="bg-gray-800 p-6 rounded-lg shadow-md"
+      aria-label="Comparison chart showing two datasets side by side"
+    >
       <h2 className="text-2xl font-semibold text-white mb-4">Comparison Chart</h2>
       <p className="text-gray-300 mb-6">
         Compare two datasets side by side to identify trends and differences.

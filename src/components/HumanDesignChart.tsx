@@ -35,14 +35,15 @@ const HumanDesignChart: React.FC = () => {
     'Root',
     'Spleen',
   ];
-  const calculateHumanDesignData = () => {
+  const calculateHumanDesignData = React.useCallback((): number[] => {
     // Mock function to simulate dynamic data calculation
     return labels.map(() => Math.floor(Math.random() * 100) + 1);
-  };
-  const dataPoints = calculateHumanDesignData();
+  }, []);
+
+  const dataPoints = React.useMemo(() => calculateHumanDesignData(), [calculateHumanDesignData]);
 
   // Chart data
-  const data = {
+  const data = React.useMemo(() => ({
     labels,
     datasets: [
       {
@@ -56,7 +57,7 @@ const HumanDesignChart: React.FC = () => {
         pointHoverBorderColor: '#4f46e5',
       },
     ],
-  };
+  }), [labels, dataPoints]);
 
   // Chart options
   const options = {
@@ -70,7 +71,7 @@ const HumanDesignChart: React.FC = () => {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => `${context.raw}%`,
+          label: (context: any) => context.raw ? `${context.raw}%` : 'No data available',
         },
       },
     },
@@ -94,7 +95,7 @@ const HumanDesignChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+    <div className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4">
       <h2 className="text-2xl font-semibold text-white mb-4">Human Design Chart</h2>
       <p className="text-gray-300 mb-6">
         Explore insights into your unique human design based on key centers.

@@ -17,12 +17,12 @@ const BirthDetailsForm: React.FC = () => {
 
   const [errors, setErrors] = useState<Partial<BirthDetails>>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const validateForm = (): boolean => {
+  const validateForm = React.useCallback((): boolean => {
     const newErrors: Partial<BirthDetails> = {};
     if (!formData.name) newErrors.name = 'Name is required.';
     if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of Birth is required.';
@@ -30,7 +30,7 @@ const BirthDetailsForm: React.FC = () => {
     if (!formData.placeOfBirth) newErrors.placeOfBirth = 'Place of Birth is required.';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,9 +57,15 @@ const BirthDetailsForm: React.FC = () => {
           name="name"
           value={formData.name}
           onChange={handleChange}
+          aria-invalid={!!errors.name}
+          aria-describedby="name-error"
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
         />
-        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+        {errors.name && (
+          <span id="name-error" className="text-red-500 text-sm mt-1" role="alert">
+            {errors.name}
+          </span>
+        )}
       </div>
 
       <div className="mb-4">
@@ -72,10 +78,14 @@ const BirthDetailsForm: React.FC = () => {
           name="dateOfBirth"
           value={formData.dateOfBirth}
           onChange={handleChange}
+          aria-invalid={!!errors.dateOfBirth}
+          aria-describedby="dateOfBirth-error"
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
         />
         {errors.dateOfBirth && (
-          <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>
+          <span id="dateOfBirth-error" className="text-red-500 text-sm mt-1" role="alert">
+            {errors.dateOfBirth}
+          </span>
         )}
       </div>
 
@@ -89,10 +99,14 @@ const BirthDetailsForm: React.FC = () => {
           name="timeOfBirth"
           value={formData.timeOfBirth}
           onChange={handleChange}
+          aria-invalid={!!errors.timeOfBirth}
+          aria-describedby="timeOfBirth-error"
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
         />
         {errors.timeOfBirth && (
-          <p className="text-red-500 text-sm mt-1">{errors.timeOfBirth}</p>
+          <span id="timeOfBirth-error" className="text-red-500 text-sm mt-1" role="alert">
+            {errors.timeOfBirth}
+          </span>
         )}
       </div>
 
@@ -106,16 +120,21 @@ const BirthDetailsForm: React.FC = () => {
           name="placeOfBirth"
           value={formData.placeOfBirth}
           onChange={handleChange}
+          aria-invalid={!!errors.placeOfBirth}
+          aria-describedby="placeOfBirth-error"
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
         />
         {errors.placeOfBirth && (
-          <p className="text-red-500 text-sm mt-1">{errors.placeOfBirth}</p>
+          <span id="placeOfBirth-error" className="text-red-500 text-sm mt-1" role="alert">
+            {errors.placeOfBirth}
+          </span>
         )}
       </div>
 
       <button
         type="submit"
         className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        disabled={!validateForm()}
       >
         Submit
       </button>

@@ -13,12 +13,11 @@ import { getDreamSpellSignature } from '../utils/dreamSpell';
 // Register Chart.js components
 ChartJS.register(PolarAreaController, RadialLinearScale, ArcElement, Tooltip, Legend);
 
-const DreamSpellChart: React.FC = () => {
+const DreamSpellChart: React.FC = React.memo(() => {
   const [selectedDate, setSelectedDate] = React.useState<string>(new Date().toISOString().split('T')[0]);
-  const [dreamSpellData, setDreamSpellData] = React.useState(() => getDreamSpellSignature(selectedDate));
-
-  React.useEffect(() => {
-    setDreamSpellData(getDreamSpellSignature(selectedDate));
+  const dreamSpellData = React.useMemo(() => {
+    const data = getDreamSpellSignature(selectedDate);
+    return data || { kinNumber: 0, glyphName: 'Unknown', toneName: 'Unknown' };
   }, [selectedDate]);
 
   // Chart data
@@ -27,7 +26,11 @@ const DreamSpellChart: React.FC = () => {
     datasets: [
       {
         label: 'Dream Spell Insights',
-        data: [dreamSpellData.kinNumber, 1, 1], // Placeholder for chart representation
+        data: [
+          dreamSpellData.kinNumber || 0,
+          dreamSpellData.glyphName.length || 0,
+          dreamSpellData.toneName.length || 0,
+        ],
         backgroundColor: [
           'rgba(255, 99, 132, 0.5)', // Red
           'rgba(54, 162, 235, 0.5)', // Blue
@@ -93,6 +96,7 @@ const DreamSpellChart: React.FC = () => {
         <input
           type="date"
           id="date"
+          aria-label="Select a date for Dream Spell insights"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"

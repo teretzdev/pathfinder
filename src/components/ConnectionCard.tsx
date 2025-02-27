@@ -5,11 +5,13 @@ interface ConnectionCardProps {
   sharedPatterns: string[];
 }
 
-const ConnectionCard: React.FC<ConnectionCardProps> = ({ name, sharedPatterns }) => {
+const ConnectionCard: React.FC<ConnectionCardProps> = React.memo(({ name, sharedPatterns }) => {
   return (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4">
+    <div className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4" role="region" aria-labelledby={`connection-${name}`}>
       {/* Connection Name */}
-      <h2 className="text-2xl font-semibold text-white">{name}</h2>
+      <h2 id={`connection-${name}`} className="text-2xl font-semibold text-white">
+        {name}
+      </h2>
 
       {/* Shared Patterns */}
       <p className="text-gray-300">Shared Patterns:</p>
@@ -24,6 +26,11 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({ name, sharedPatterns })
       )}
     </div>
   );
+});
+
+ConnectionCard.defaultProps = {
+  name: 'Unknown Connection',
+  sharedPatterns: [],
 };
 
 export default ConnectionCard;

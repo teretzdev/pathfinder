@@ -6,12 +6,12 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <header className="p-4 bg-gray-800 shadow-md">
+    <div className="min-h-screen bg-gray-900 text-white" lang="en">
+      <header className="p-4 bg-gray-800 shadow-md" aria-label="Main Header">
         <h1 className="text-2xl font-bold">Pathfinder</h1>
       </header>
-      <main className="p-6">{children}</main>
-      <footer className="p-4 bg-gray-800 text-center">
+      <section className="p-6 container mx-auto">{children}</section>
+      <footer className="p-4 bg-gray-800 text-center" aria-label="Footer">
         <p>&copy; 2023 Pathfinder. All rights reserved.</p>
       </footer>
     </div>

@@ -20,18 +20,18 @@ const Profile: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
   };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<ProfileData> = {};
-    if (!formData.name) newErrors.name = 'Name is required.';
-    if (!formData.email) {
+    if (!formData.name.trim()) newErrors.name = 'Name is required.';
+    if (!formData.email.trim()) {
       newErrors.email = 'Email is required.';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid.';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email.trim())) {
+      newErrors.email = 'Please enter a valid email address.';
     }
-    if (!formData.bio) newErrors.bio = 'Bio is required.';
+    if (!formData.bio.trim()) newErrors.bio = 'Bio is required.';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -39,14 +39,26 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('/api/profile'); // Replace with actual API endpoint
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile data.');
+        let retries = 3;
+        while (retries > 0) {
+          try {
+            const response = await fetch('/api/profile'); // Replace with actual API endpoint
+            if (!response.ok) {
+              throw new Error('Failed to fetch profile data.');
+            }
+            const data: ProfileData = await response.json();
+            setFormData(data);
+            setFetchError(null);
+            break;
+          } catch (error: any) {
+            retries -= 1;
+            if (retries === 0) {
+              setFetchError(
+                error.message || 'An error occurred while fetching profile data. Please try again later.'
+              );
+            }
+          }
         }
-        const data: ProfileData = await response.json();
-        setFormData(data);
-      } catch (error: any) {
-        setFetchError(error.message || 'An error occurred while fetching profile data.');
       } finally {
         setLoading(false);
       }
@@ -72,7 +84,9 @@ const Profile: React.FC = () => {
         setFormData(updatedData);
         alert('Profile updated successfully!');
       } catch (error: any) {
-        alert(error.message || 'An error occurred while updating the profile.');
+        const errorMessage =
+          error.message || 'An unexpected error occurred while updating the profile.';
+        setErrors((prev) => ({ ...prev, form: errorMessage }));
       } finally {
         setLoading(false);
       }
@@ -88,6 +102,8 @@ const Profile: React.FC = () => {
           <p className="text-center text-gray-400">Loading profile...</p>
         ) : fetchError ? (
           <p className="text-center text-red-500">{fetchError}</p>
+        ) : errors.form ? (
+          <p className="text-center text-red-500">{errors.form}</p>
         ) : (
           <form
             onSubmit={handleSubmit}
@@ -143,8 +159,9 @@ const Profile: React.FC = () => {
             <button
               type="submit"
               className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              disabled={loading}
             >
-              Save Changes
+              {loading ? 'Saving...' : 'Save Changes'}
             </button>
           </form>
         )}
