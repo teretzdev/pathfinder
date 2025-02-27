@@ -108,7 +108,7 @@ const Diary: React.FC = () => {
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold text-white">Your Entries</h2>
           {entries.length === 0 ? (
-            <p className="text-gray-400">No entries yet. Start logging your thoughts!</p>
+            <p className="text-gray-400">You have no diary entries yet. Use the form above to add your first entry and start tracking your synchronicities!</p>
           ) : (
             <ul className="space-y-4">
               {entries.map((entry, index) => (

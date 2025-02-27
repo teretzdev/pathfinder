@@ -23,7 +23,7 @@ ChartJS.register(
 );
 
 const HumanDesignChart: React.FC = () => {
-  // Simulated human design data
+  // Dynamic human design data
   const labels = [
     'Head',
     'Ajna',
@@ -35,7 +35,11 @@ const HumanDesignChart: React.FC = () => {
     'Root',
     'Spleen',
   ];
-  const dataPoints = [80, 65, 90, 75, 50, 95, 70, 85, 60];
+  const calculateHumanDesignData = () => {
+    // Mock function to simulate dynamic data calculation
+    return labels.map(() => Math.floor(Math.random() * 100) + 1);
+  };
+  const dataPoints = calculateHumanDesignData();
 
   // Chart data
   const data = {

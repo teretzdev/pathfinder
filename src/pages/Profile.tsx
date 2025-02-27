@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 
 interface ProfileData {
@@ -15,6 +15,8 @@ const Profile: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Partial<ProfileData>>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -34,11 +36,46 @@ const Profile: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/profile'); // Replace with actual API endpoint
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile data.');
+        }
+        const data: ProfileData = await response.json();
+        setFormData(data);
+      } catch (error: any) {
+        setFetchError(error.message || 'An error occurred while fetching profile data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Profile updated:', formData);
-      // Add logic to handle profile update, e.g., API call
+      setLoading(true);
+      try {
+        const response = await fetch('/api/profile', {
+          method: 'PUT', // Replace with actual HTTP method
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update profile.');
+        }
+        const updatedData: ProfileData = await response.json();
+        setFormData(updatedData);
+        alert('Profile updated successfully!');
+      } catch (error: any) {
+        alert(error.message || 'An error occurred while updating the profile.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -47,10 +84,15 @@ const Profile: React.FC = () => {
       <div className="max-w-3xl mx-auto space-y-8">
         <h1 className="text-3xl font-bold text-center">Your Profile</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
-        >
+        {loading ? (
+          <p className="text-center text-gray-400">Loading profile...</p>
+        ) : fetchError ? (
+          <p className="text-center text-red-500">{fetchError}</p>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
+          >
           <h2 className="text-2xl font-semibold text-white">Edit Profile</h2>
 
           <div>
@@ -104,7 +146,8 @@ const Profile: React.FC = () => {
           >
             Save Changes
           </button>
-        </form>
+          </form>
+        )}
       </div>
     </Layout>
   );
