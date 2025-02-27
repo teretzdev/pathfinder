@@ -44,7 +44,6 @@ const Diary: React.FC = () => {
       <div className="max-w-3xl mx-auto space-y-8">
         <h1 className="text-3xl font-bold text-center">Synchronicity Diary</h1>
 
-        {/* Diary Entry Form */}
         <form
           onSubmit={handleSubmit}
           className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
@@ -104,7 +103,6 @@ const Diary: React.FC = () => {
           </button>
         </form>
 
-        {/* Diary Entries List */}
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold text-white">Your Entries</h2>
           {entries.length === 0 ? (
@@ -114,7 +112,7 @@ const Diary: React.FC = () => {
               {entries.map((entry, index) => (
                 <li
                   key={index}
-                  className="bg-gray-800 p-4 rounded-lg shadow-md space-y-2"
+                  className="bg-gray-800 p-4 rounded-lg shadow-md"
                 >
                   <h3 className="text-xl font-bold text-white">{entry.title}</h3>
                   <p className="text-sm text-gray-400">{entry.date}</p>

@@ -4,19 +4,17 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <header className="p-4 bg-gray-800 shadow-md">
-        <h1 className="text-2xl font-bold">Pathfinder</h1>
-      </header>
-      <main className="p-6">{children}</main>
-      <footer className="p-4 bg-gray-800 text-center">
-        <p>&copy; 2023 Pathfinder. All rights reserved.</p>
-      </footer>
-    </div>
-  );
-};
+const Layout: React.FC<LayoutProps> = ({ children }) => (
+  <div className="min-h-screen bg-gray-900 text-white">
+    <header className="p-4 bg-gray-800 shadow-md">
+      <h1 className="text-2xl font-bold">Pathfinder</h1>
+    </header>
+    <main className="p-6">{children}</main>
+    <footer className="p-4 bg-gray-800 text-center">
+      <p>&copy; 2023 Pathfinder. All rights reserved.</p>
+    </footer>
+  </div>
+);
 
 export default Layout;
 ```
