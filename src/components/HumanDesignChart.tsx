@@ -23,7 +23,6 @@ ChartJS.register(
 );
 
 const HumanDesignChart: React.FC = () => {
-  // Dynamic human design data
   const labels = [
     'Head',
     'Ajna',
@@ -35,10 +34,9 @@ const HumanDesignChart: React.FC = () => {
     'Root',
     'Spleen',
   ];
-  const calculateHumanDesignData = () => {
-    // Mock function to simulate dynamic data calculation
-    return labels.map(() => Math.floor(Math.random() * 100) + 1);
-  };
+
+  const calculateHumanDesignData = () =>
+    labels.map(() => Math.floor(Math.random() * 100) + 1);
   const dataPoints = calculateHumanDesignData();
 
   // Chart data
@@ -48,8 +46,8 @@ const HumanDesignChart: React.FC = () => {
       {
         label: 'Human Design Insights',
         data: dataPoints,
-        borderColor: '#4f46e5', // Primary color
-        backgroundColor: 'rgba(79, 70, 229, 0.2)', // Transparent fill
+        borderColor: '#4f46e5',
+        backgroundColor: 'rgba(79, 70, 229, 0.2)',
         pointBackgroundColor: '#4f46e5',
         pointBorderColor: '#ffffff',
         pointHoverBackgroundColor: '#ffffff',
@@ -77,17 +75,17 @@ const HumanDesignChart: React.FC = () => {
     scales: {
       r: {
         ticks: {
-          color: '#ffffff', // White text for dark theme
-          backdropColor: 'transparent', // Remove background behind ticks
+          color: '#ffffff',
+          backdropColor: 'transparent',
         },
         grid: {
-          color: '#3f3f3f', // Grid color matching dark theme
+          color: '#3f3f3f',
         },
         angleLines: {
-          color: '#3f3f3f', // Angle lines color matching dark theme
+          color: '#3f3f3f',
         },
         pointLabels: {
-          color: '#ffffff', // Labels color for dark theme
+          color: '#ffffff',
         },
       },
     },

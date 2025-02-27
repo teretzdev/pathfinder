@@ -10,7 +10,6 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-// Register Chart.js components
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 const BiorhythmChart: React.FC = () => {
@@ -46,21 +45,21 @@ const BiorhythmChart: React.FC = () => {
       {
         label: 'Physical',
         data: physical,
-        borderColor: '#4f46e5', // Primary color
+        borderColor: '#4f46e5',
         backgroundColor: 'rgba(79, 70, 229, 0.2)',
         tension: 0.4,
       },
       {
         label: 'Emotional',
         data: emotional,
-        borderColor: '#22d3ee', // Secondary color
+        borderColor: '#22d3ee',
         backgroundColor: 'rgba(34, 211, 238, 0.2)',
         tension: 0.4,
       },
       {
         label: 'Intellectual',
         data: intellectual,
-        borderColor: '#facc15', // Yellow color
+        borderColor: '#facc15',
         backgroundColor: 'rgba(250, 204, 21, 0.2)',
         tension: 0.4,
       },

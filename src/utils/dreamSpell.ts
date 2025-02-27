@@ -1,7 +1,6 @@
 /**
  * Dream Spell Astrology Utility Functions
- * This file contains utility functions for Dream Spell astrology calculations.
- * These functions are designed to handle the core logic for Dream Spell insights.
+ * Utility functions for Dream Spell astrology calculations.
  */
 
 /**
@@ -10,15 +9,13 @@
  * @returns {number} - The kin number (1-260) corresponding to the date.
  */
 export const calculateKinNumber = (date: string): number => {
-  const baseDate = new Date('1854-07-26'); // Dream Spell calendar starts on July 26, 1854
+  const baseDate = new Date('1854-07-26');
   const targetDate = new Date(date);
 
-  // Calculate the number of days between the base date and the target date
   const daysDifference = Math.floor(
     (targetDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  // Kin number cycles every 260 days
   return ((daysDifference % 260) + 260) % 260 || 260;
 };
 
@@ -51,7 +48,6 @@ export const getGlyphName = (kinNumber: number): string => {
     'Yellow Sun',
   ];
 
-  // Glyphs repeat every 20 kin numbers
   return glyphs[(kinNumber - 1) % 20];
 };
 
@@ -77,7 +73,6 @@ export const getToneName = (kinNumber: number): string => {
     'Cosmic',
   ];
 
-  // Tones repeat every 13 kin numbers
   return tones[(kinNumber - 1) % 13];
 };
 
@@ -133,7 +128,7 @@ export const getDreamSpellSignature = (date: string): {
  * @returns {number} - The kin number (1-260) corresponding to the date.
  */
 export const calculateKinNumber = (date: string): number => {
-  const baseDate = new Date('1854-07-26'); // Dream Spell calendar starts on July 26, 1854
+  const baseDate = new Date('1854-07-26');
   const targetDate = new Date(date);
 
   // Calculate the number of days between the base date and the target date

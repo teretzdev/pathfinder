@@ -10,7 +10,6 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-// Register Chart.js components
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 interface ComparisonChartProps {
@@ -20,35 +19,33 @@ interface ComparisonChartProps {
 }
 
 const ComparisonChart: React.FC<ComparisonChartProps> = ({ chart1Data, chart2Data, labels }) => {
-  // Chart data
   const data = {
     labels,
     datasets: [
       {
         label: 'Chart 1',
         data: chart1Data,
-        borderColor: '#4f46e5', // Primary color
+        borderColor: '#4f46e5',
         backgroundColor: 'rgba(79, 70, 229, 0.2)',
         tension: 0.4,
       },
       {
         label: 'Chart 2',
         data: chart2Data,
-        borderColor: '#22d3ee', // Secondary color
+        borderColor: '#22d3ee',
         backgroundColor: 'rgba(34, 211, 238, 0.2)',
         tension: 0.4,
       },
     ],
   };
 
-  // Chart options
   const options = {
     responsive: true,
     plugins: {
       legend: {
         position: 'top' as const,
         labels: {
-          color: '#ffffff', // White text for dark theme
+          color: '#ffffff',
         },
       },
       tooltip: {
@@ -60,18 +57,18 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({ chart1Data, chart2Dat
     scales: {
       x: {
         ticks: {
-          color: '#ffffff', // White text for dark theme
+          color: '#ffffff',
         },
         grid: {
-          color: '#3f3f3f', // Grid color matching dark theme
+          color: '#3f3f3f',
         },
       },
       y: {
         ticks: {
-          color: '#ffffff', // White text for dark theme
+          color: '#ffffff',
         },
         grid: {
-          color: '#3f3f3f', // Grid color matching dark theme
+          color: '#3f3f3f',
         },
       },
     },

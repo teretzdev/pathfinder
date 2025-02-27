@@ -5,7 +5,6 @@ const Sidebar: React.FC = () => {
   return (
     <aside className="w-64 bg-gray-800 text-white h-full shadow-md">
       <div className="p-4">
-        {/* Application Name */}
         <h2 className="text-2xl font-bold mb-4">Pathfinder</h2>
       </div>
       <nav>

@@ -8,10 +8,7 @@ interface ConnectionCardProps {
 const ConnectionCard: React.FC<ConnectionCardProps> = ({ name, sharedPatterns }) => {
   return (
     <div className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4">
-      {/* Connection Name */}
       <h2 className="text-2xl font-semibold text-white">{name}</h2>
-
-      {/* Shared Patterns */}
       <p className="text-gray-300">Shared Patterns:</p>
       {sharedPatterns.length > 0 ? (
         <ul className="list-disc list-inside text-gray-400">

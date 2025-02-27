@@ -10,7 +10,6 @@ import {
 import { PolarArea } from 'react-chartjs-2';
 import { getDreamSpellSignature } from '../utils/dreamSpell';
 
-// Register Chart.js components
 ChartJS.register(PolarAreaController, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 const DreamSpellChart: React.FC = () => {
@@ -21,7 +20,6 @@ const DreamSpellChart: React.FC = () => {
     setDreamSpellData(getDreamSpellSignature(selectedDate));
   }, [selectedDate]);
 
-  // Chart data
   const data = {
     labels: ['Kin Number', 'Glyph Name', 'Tone Name'],
     datasets: [
@@ -43,7 +41,6 @@ const DreamSpellChart: React.FC = () => {
     ],
   };
 
-  // Chart options
   const options = {
     responsive: true,
     plugins: {
@@ -85,7 +82,6 @@ const DreamSpellChart: React.FC = () => {
         Select a date to explore the Dream Spell astrology insights.
       </p>
 
-      {/* Date Input */}
       <div className="mb-6">
         <label htmlFor="date" className="block text-sm font-medium text-white">
           Select Date
@@ -99,7 +95,6 @@ const DreamSpellChart: React.FC = () => {
         />
       </div>
 
-      {/* Dream Spell Signature */}
       <div className="mb-6 text-gray-300">
         <p><strong>Kin Number:</strong> {dreamSpellData.kinNumber}</p>
         <p><strong>Glyph Name:</strong> {dreamSpellData.glyphName}</p>

@@ -39,7 +39,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('/api/profile'); // Replace with actual API endpoint
+        const response = await fetch('/api/profile');
         if (!response.ok) {
           throw new Error('Failed to fetch profile data.');
         }
@@ -61,7 +61,7 @@ const Profile: React.FC = () => {
       setLoading(true);
       try {
         const response = await fetch('/api/profile', {
-          method: 'PUT', // Replace with actual HTTP method
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
