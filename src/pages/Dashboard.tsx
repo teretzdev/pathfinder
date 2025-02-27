@@ -3,6 +3,9 @@ import Layout from '../components/Layout';
 import BiorhythmChart from '../components/BiorhythmChart';
 import HumanDesignChart from '../components/HumanDesignChart';
 import TransitChart from '../components/TransitChart';
+import BiorhythmChart from '../components/BiorhythmChart';
+import HumanDesignChart from '../components/HumanDesignChart';
+import TransitChart from '../components/TransitChart';
 
 const Dashboard: React.FC = () => {
   return (
