@@ -58,8 +58,14 @@ const BirthDetailsForm: React.FC = () => {
           value={formData.name}
           onChange={handleChange}
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
+          aria-required="true"
+          aria-describedby="name-error"
         />
-        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+        {errors.name && (
+          <p id="name-error" className="text-red-500 text-sm mt-1" aria-live="polite">
+            {errors.name}
+          </p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -73,9 +79,13 @@ const BirthDetailsForm: React.FC = () => {
           value={formData.dateOfBirth}
           onChange={handleChange}
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
+          aria-required="true"
+          aria-describedby="dateOfBirth-error"
         />
         {errors.dateOfBirth && (
-          <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>
+          <p id="dateOfBirth-error" className="text-red-500 text-sm mt-1" aria-live="polite">
+            {errors.dateOfBirth}
+          </p>
         )}
       </div>
 
@@ -90,9 +100,13 @@ const BirthDetailsForm: React.FC = () => {
           value={formData.timeOfBirth}
           onChange={handleChange}
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
+          aria-required="true"
+          aria-describedby="timeOfBirth-error"
         />
         {errors.timeOfBirth && (
-          <p className="text-red-500 text-sm mt-1">{errors.timeOfBirth}</p>
+          <p id="timeOfBirth-error" className="text-red-500 text-sm mt-1" aria-live="polite">
+            {errors.timeOfBirth}
+          </p>
         )}
       </div>
 
@@ -107,9 +121,13 @@ const BirthDetailsForm: React.FC = () => {
           value={formData.placeOfBirth}
           onChange={handleChange}
           className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
+          aria-required="true"
+          aria-describedby="placeOfBirth-error"
         />
         {errors.placeOfBirth && (
-          <p className="text-red-500 text-sm mt-1">{errors.placeOfBirth}</p>
+          <p id="placeOfBirth-error" className="text-red-500 text-sm mt-1" aria-live="polite">
+            {errors.placeOfBirth}
+          </p>
         )}
       </div>
 
