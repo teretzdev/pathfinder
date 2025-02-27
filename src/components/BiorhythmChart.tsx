@@ -14,11 +14,30 @@ import { Line } from 'react-chartjs-2';
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 const BiorhythmChart: React.FC = () => {
-  // Simulated biorhythm data
+  const [dateOfBirth, setDateOfBirth] = React.useState<string>('');
   const labels = Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`);
-  const physical = labels.map((_, i) => Math.sin((2 * Math.PI * i) / 23) * 100);
-  const emotional = labels.map((_, i) => Math.sin((2 * Math.PI * i) / 28) * 100);
-  const intellectual = labels.map((_, i) => Math.sin((2 * Math.PI * i) / 33) * 100);
+
+  const calculateBiorhythm = (days: number, cycle: number) => {
+    return Math.sin((2 * Math.PI * days) / cycle) * 100;
+  };
+
+  const calculateBiorhythms = (dob: string) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    const daysSinceBirth = Math.floor(
+      (today.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    return {
+      physical: labels.map((_, i) => calculateBiorhythm(daysSinceBirth + i, 23)),
+      emotional: labels.map((_, i) => calculateBiorhythm(daysSinceBirth + i, 28)),
+      intellectual: labels.map((_, i) => calculateBiorhythm(daysSinceBirth + i, 33)),
+    };
+  };
+
+  const { physical, emotional, intellectual } = dateOfBirth
+    ? calculateBiorhythms(dateOfBirth)
+    : { physical: [], emotional: [], intellectual: [] };
 
   // Chart data
   const data = {
@@ -87,9 +106,18 @@ const BiorhythmChart: React.FC = () => {
   return (
     <div className="bg-gray-800 p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-white mb-4">Biorhythm Chart</h2>
-      <p className="text-gray-300 mb-6">
-        Visualize your physical, emotional, and intellectual cycles over the next 30 days.
-      </p>
+      <div className="mb-6">
+        <label htmlFor="dateOfBirth" className="block text-sm font-medium text-white">
+          Enter your Date of Birth:
+        </label>
+        <input
+          type="date"
+          id="dateOfBirth"
+          value={dateOfBirth}
+          onChange={(e) => setDateOfBirth(e.target.value)}
+          className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
+        />
+      </div>
       <div className="relative">
         <Line data={data} options={options} />
       </div>

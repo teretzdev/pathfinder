@@ -1,5 +1,11 @@
 import React from 'react';
 import Layout from '../components/Layout';
+import BiorhythmChart from '../components/BiorhythmChart';
+import HumanDesignChart from '../components/HumanDesignChart';
+import TransitChart from '../components/TransitChart';
+import BiorhythmChart from '../components/BiorhythmChart';
+import HumanDesignChart from '../components/HumanDesignChart';
+import TransitChart from '../components/TransitChart';
 
 const Dashboard: React.FC = () => {
   return (
@@ -15,8 +21,8 @@ const Dashboard: React.FC = () => {
             Explore the astrological transits influencing your day.
           </p>
           {/* Placeholder for transit data */}
-          <div className="mt-4 p-4 bg-gray-700 rounded-md">
-            <p className="text-gray-400">Transit data will be displayed here.</p>
+          <div className="mt-4">
+            <TransitChart />
           </div>
         </section>
 
@@ -27,8 +33,8 @@ const Dashboard: React.FC = () => {
             Track your physical, emotional, and intellectual cycles.
           </p>
           {/* Placeholder for biorhythm chart */}
-          <div className="mt-4 p-4 bg-gray-700 rounded-md">
-            <p className="text-gray-400">Biorhythm chart will be displayed here.</p>
+          <div className="mt-4">
+            <BiorhythmChart />
           </div>
         </section>
 
@@ -39,8 +45,8 @@ const Dashboard: React.FC = () => {
             Gain insights into your unique human design.
           </p>
           {/* Placeholder for human design chart */}
-          <div className="mt-4 p-4 bg-gray-700 rounded-md">
-            <p className="text-gray-400">Human design insights will be displayed here.</p>
+          <div className="mt-4">
+            <HumanDesignChart />
           </div>
         </section>
       </div>

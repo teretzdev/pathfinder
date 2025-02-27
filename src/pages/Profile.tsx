@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 
 interface ProfileData {
@@ -15,6 +15,8 @@ const Profile: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Partial<ProfileData>>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -34,11 +36,46 @@ const Profile: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/profile'); // Replace with actual API endpoint
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile data.');
+        }
+        const data: ProfileData = await response.json();
+        setFormData(data);
+      } catch (error: any) {
+        setFetchError(error.message || 'An error occurred while fetching profile data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Profile updated:', formData);
-      // Add logic to handle profile update, e.g., API call
+      setLoading(true);
+      try {
+        const response = await fetch('/api/profile', {
+          method: 'PUT', // Replace with actual HTTP method
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update profile.');
+        }
+        const updatedData: ProfileData = await response.json();
+        setFormData(updatedData);
+        alert('Profile updated successfully!');
+      } catch (error: any) {
+        alert(error.message || 'An error occurred while updating the profile.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -47,64 +84,70 @@ const Profile: React.FC = () => {
       <div className="max-w-3xl mx-auto space-y-8">
         <h1 className="text-3xl font-bold text-center">Your Profile</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
-        >
-          <h2 className="text-2xl font-semibold text-white">Edit Profile</h2>
-
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-white">
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
-            />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
-            />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="bio" className="block text-sm font-medium text-white">
-              Bio
-            </label>
-            <textarea
-              id="bio"
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              rows={4}
-              className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
-            />
-            {errors.bio && <p className="text-red-500 text-sm mt-1">{errors.bio}</p>}
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        {loading ? (
+          <p className="text-center text-gray-400">Loading profile...</p>
+        ) : fetchError ? (
+          <p className="text-center text-red-500">{fetchError}</p>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
           >
-            Save Changes
-          </button>
-        </form>
+            <h2 className="text-2xl font-semibold text-white">Edit Profile</h2>
+
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-white">
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
+              />
+              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-white">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
+              />
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="bio" className="block text-sm font-medium text-white">
+                Bio
+              </label>
+              <textarea
+                id="bio"
+                name="bio"
+                value={formData.bio}
+                onChange={handleChange}
+                rows={4}
+                className="mt-1 block w-full p-2 bg-gray-700 text-white rounded-md focus:ring-primary focus:border-primary"
+              />
+              {errors.bio && <p className="text-red-500 text-sm mt-1">{errors.bio}</p>}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            >
+              Save Changes
+            </button>
+          </form>
+        )}
       </div>
     </Layout>
   );

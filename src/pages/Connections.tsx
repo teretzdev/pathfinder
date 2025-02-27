@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import ConnectionCard from '../components/ConnectionCard';
 
 interface Connection {
   name: string;
@@ -35,20 +36,11 @@ const Connections: React.FC = () => {
           ) : (
             <ul className="space-y-4">
               {connections.map((connection, index) => (
-                <li
+                <ConnectionCard
                   key={index}
-                  className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
-                >
-                  <h2 className="text-2xl font-semibold text-white">
-                    {connection.name}
-                  </h2>
-                  <p className="text-gray-300">Shared Patterns:</p>
-                  <ul className="list-disc list-inside text-gray-400">
-                    {connection.sharedPatterns.map((pattern, idx) => (
-                      <li key={idx}>{pattern}</li>
-                    ))}
-                  </ul>
-                </li>
+                  name={connection.name}
+                  sharedPatterns={connection.sharedPatterns}
+                />
               ))}
             </ul>
           )}
