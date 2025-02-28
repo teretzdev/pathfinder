@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import profileService from '../services/profileService';
 
 interface ProfileData {
   name: string;
   email: string;
-  bio: string;
+  dateOfBirth: string;
 }
 
 const Profile: React.FC = () => {
@@ -39,11 +40,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('/api/profile');
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile data.');
-        }
-        const data: ProfileData = await response.json();
+        const data = await profileService.fetchProfile(1); // Replace 1 with the actual user ID
         setFormData(data);
       } catch (error: any) {
         setFetchError(error.message || 'An error occurred while fetching profile data.');
@@ -60,16 +57,8 @@ const Profile: React.FC = () => {
     if (validateForm()) {
       setLoading(true);
       try {
-        const response = await fetch('/api/profile', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-        if (!response.ok) {
-          throw new Error('Failed to update profile.');
-        }
-        const updatedData: ProfileData = await response.json();
-        setFormData(updatedData);
+        const updatedData = await profileService.updateProfile(1, formData); // Replace 1 with the actual user ID
+        setFormData(updatedData.user);
         alert('Profile updated successfully!');
       } catch (error: any) {
         alert(error.message || 'An error occurred while updating the profile.');

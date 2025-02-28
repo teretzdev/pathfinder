@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import diaryService from '../services/diaryService';
 
 interface DiaryEntry {
   date: string;
@@ -30,12 +31,32 @@ const Diary: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchEntries = async () => {
+      try {
+        const userId = 1; // Replace with actual user ID
+        const fetchedEntries = await diaryService.fetchAllEntries(userId);
+        setEntries(fetchedEntries);
+      } catch (error) {
+        console.error('Error fetching diary entries:', error);
+      }
+    };
+
+    fetchEntries();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      setEntries((prev) => [...prev, formData]);
-      setFormData({ date: '', title: '', content: '' });
-      setErrors({});
+      try {
+        const userId = 1; // Replace with actual user ID
+        const newEntry = await diaryService.createEntry({ ...formData, userId });
+        setEntries((prev) => [...prev, newEntry.entry]);
+        setFormData({ date: '', title: '', content: '' });
+        setErrors({});
+      } catch (error) {
+        console.error('Error creating diary entry:', error);
+      }
     }
   };
 
