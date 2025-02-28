@@ -1,4 +1,5 @@
 import { get, post } from './api';
+import frontendLogger from '../utils/logger';
 
 // Define types for connections
 interface Connection {
@@ -27,7 +28,15 @@ const connectionService = {
    * @returns A promise resolving to an array of connections
    */
   fetchConnections: async (userId: number): Promise<Connection[]> => {
-    return await get<Connection[]>(`/connections/${userId}`);
+    frontendLogger.info(`Fetching connections for userId: ${userId}`);
+    try {
+      const connections = await get<Connection[]>(`/connections/${userId}`);
+      frontendLogger.info(`Successfully fetched ${connections.length} connections for userId: ${userId}`);
+      return connections;
+    } catch (error) {
+      frontendLogger.error(`Error fetching connections for userId: ${userId}`, { error });
+      throw error;
+    }
   },
 
   /**
@@ -38,7 +47,15 @@ const connectionService = {
   createConnection: async (
     data: CreateConnectionRequest
   ): Promise<CreateConnectionResponse> => {
-    return await post<CreateConnectionResponse>('/connections', data);
+    frontendLogger.info(`Creating a new connection for userId: ${data.userId} with connectedUserId: ${data.connectedUserId}`);
+    try {
+      const response = await post<CreateConnectionResponse>('/connections', data);
+      frontendLogger.info(`Successfully created a connection with ID: ${response.connection.id}`);
+      return response;
+    } catch (error) {
+      frontendLogger.error(`Error creating connection for userId: ${data.userId} with connectedUserId: ${data.connectedUserId}`, { error });
+      throw error;
+    }
   },
 };
 

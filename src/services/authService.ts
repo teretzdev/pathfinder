@@ -1,4 +1,5 @@
 import { get, post } from './api';
+import frontendLogger from '../utils/logger';
 
 // Define the types for the authentication service
 interface LoginResponse {
@@ -37,7 +38,15 @@ const authService = {
     dateOfBirth: string
   ): Promise<RegisterResponse> => {
     const data = { name, email, password, dateOfBirth };
-    return await post<RegisterResponse>('/auth/register', data);
+    frontendLogger.info('Registering user', { name, email });
+    try {
+      const response = await post<RegisterResponse>('/auth/register', data);
+      frontendLogger.info('User registered successfully', { email });
+      return response;
+    } catch (error) {
+      frontendLogger.error('Error during user registration', { email, error });
+      throw error;
+    }
   },
 
   /**
@@ -48,7 +57,15 @@ const authService = {
    */
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const data = { email, password };
-    return await post<LoginResponse>('/auth/login', data);
+    frontendLogger.info('Logging in user', { email });
+    try {
+      const response = await post<LoginResponse>('/auth/login', data);
+      frontendLogger.info('User logged in successfully', { email });
+      return response;
+    } catch (error) {
+      frontendLogger.error('Error during user login', { email, error });
+      throw error;
+    }
   },
 
   /**
@@ -62,7 +79,15 @@ const authService = {
         Authorization: `Bearer ${token}`,
       },
     };
-    return await get<ValidateTokenResponse>('/auth/validate-token', config);
+    frontendLogger.info('Validating token');
+    try {
+      const response = await get<ValidateTokenResponse>('/auth/validate-token', config);
+      frontendLogger.info('Token validated successfully');
+      return response;
+    } catch (error) {
+      frontendLogger.error('Error during token validation', { error });
+      throw error;
+    }
   },
 };
 

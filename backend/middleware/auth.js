@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import logger from '../utils/logger.js';
 
 /**
  * Authentication Middleware
@@ -33,7 +34,11 @@ const authenticate = (req, res, next) => {
     // Proceed to the next middleware or route handler
     next();
   } catch (error) {
-    console.error('Error verifying token:', error);
+    logger.error('Error verifying token', {
+      error: error.message,
+      stack: error.stack,
+      authHeader: authHeader || 'No Authorization header provided',
+    });
     return res.status(401).json({ message: 'Invalid or expired token.' });
   }
 };

@@ -1,6 +1,7 @@
 import express from 'express';
 import DiaryEntry from '../models/DiaryEntry.js';
 import { Op } from 'sequelize';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.post('/', async (req, res) => {
     const newEntry = await DiaryEntry.create({ date, title, content, userId });
     res.status(201).json({ message: 'Diary entry created successfully.', entry: newEntry });
   } catch (error) {
-    console.error('Error creating diary entry:', error);
+    logger.error('Error creating diary entry', { error: error.message });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -33,7 +34,7 @@ router.get('/:userId', async (req, res) => {
 
     res.status(200).json(entries);
   } catch (error) {
-    console.error('Error fetching diary entries:', error);
+    logger.error('Error fetching diary entries', { error: error.message, userId });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -56,7 +57,7 @@ router.get('/:userId/:entryId', async (req, res) => {
 
     res.status(200).json(entry);
   } catch (error) {
-    console.error('Error fetching diary entry:', error);
+    logger.error('Error fetching diary entry', { error: error.message, userId, entryId });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -86,7 +87,7 @@ router.put('/:userId/:entryId', async (req, res) => {
 
     res.status(200).json({ message: 'Diary entry updated successfully.', entry });
   } catch (error) {
-    console.error('Error updating diary entry:', error);
+    logger.error('Error updating diary entry', { error: error.message, userId, entryId });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -111,7 +112,7 @@ router.delete('/:userId/:entryId', async (req, res) => {
 
     res.status(200).json({ message: 'Diary entry deleted successfully.' });
   } catch (error) {
-    console.error('Error deleting diary entry:', error);
+    logger.error('Error deleting diary entry', { error: error.message, userId, entryId });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -139,7 +140,7 @@ router.get('/:userId/search', async (req, res) => {
 
     res.status(200).json(entries);
   } catch (error) {
-    console.error('Error searching diary entries:', error);
+    logger.error('Error searching diary entries', { error: error.message, userId, query });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });

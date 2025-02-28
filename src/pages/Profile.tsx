@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import profileService from '../services/profileService';
+import frontendLogger from '../utils/logger';
 
 interface ProfileData {
   name: string;
@@ -43,7 +44,9 @@ const Profile: React.FC = () => {
         const data = await profileService.fetchProfile(1); // Replace 1 with the actual user ID
         setFormData(data);
       } catch (error: any) {
-        setFetchError(error.message || 'An error occurred while fetching profile data.');
+        const errorMessage = error.message || 'An error occurred while fetching profile data.';
+        frontendLogger.error('Error fetching profile data', { error: errorMessage });
+        setFetchError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -59,9 +62,10 @@ const Profile: React.FC = () => {
       try {
         const updatedData = await profileService.updateProfile(1, formData); // Replace 1 with the actual user ID
         setFormData(updatedData.user);
-        alert('Profile updated successfully!');
+        frontendLogger.info('Profile updated successfully', { formData });
       } catch (error: any) {
-        alert(error.message || 'An error occurred while updating the profile.');
+        const errorMessage = error.message || 'An error occurred while updating the profile.';
+        frontendLogger.error('Error updating profile', { error: errorMessage });
       } finally {
         setLoading(false);
       }

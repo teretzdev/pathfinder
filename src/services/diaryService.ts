@@ -1,4 +1,5 @@
 import { get, post, put, del } from './api';
+import frontendLogger from '../utils/logger';
 
 // Define types for diary entries
 interface DiaryEntry {
@@ -44,7 +45,15 @@ const diaryService = {
    * @returns A promise resolving to an array of diary entries
    */
   fetchAllEntries: async (userId: number): Promise<DiaryEntry[]> => {
-    return await get<DiaryEntry[]>(`/diary/${userId}`);
+    try {
+      frontendLogger.info('Fetching all diary entries', { userId });
+      const entries = await get<DiaryEntry[]>(`/diary/${userId}`);
+      frontendLogger.info('Fetched all diary entries successfully', { userId, count: entries.length });
+      return entries;
+    } catch (error) {
+      frontendLogger.error('Error fetching all diary entries', { userId, error });
+      throw error;
+    }
   },
 
   /**
@@ -54,7 +63,15 @@ const diaryService = {
    * @returns A promise resolving to the diary entry
    */
   fetchEntryById: async (userId: number, entryId: number): Promise<DiaryEntry> => {
-    return await get<DiaryEntry>(`/diary/${userId}/${entryId}`);
+    try {
+      frontendLogger.info('Fetching diary entry by ID', { userId, entryId });
+      const entry = await get<DiaryEntry>(`/diary/${userId}/${entryId}`);
+      frontendLogger.info('Fetched diary entry successfully', { userId, entryId });
+      return entry;
+    } catch (error) {
+      frontendLogger.error('Error fetching diary entry by ID', { userId, entryId, error });
+      throw error;
+    }
   },
 
   /**
@@ -63,7 +80,15 @@ const diaryService = {
    * @returns A promise resolving to the created diary entry
    */
   createEntry: async (data: CreateDiaryEntryRequest): Promise<CreateDiaryEntryResponse> => {
-    return await post<CreateDiaryEntryResponse>('/diary', data);
+    try {
+      frontendLogger.info('Creating a new diary entry', { data });
+      const response = await post<CreateDiaryEntryResponse>('/diary', data);
+      frontendLogger.info('Created a new diary entry successfully', { entryId: response.entry.id });
+      return response;
+    } catch (error) {
+      frontendLogger.error('Error creating a new diary entry', { data, error });
+      throw error;
+    }
   },
 
   /**
@@ -78,7 +103,15 @@ const diaryService = {
     entryId: number,
     data: UpdateDiaryEntryRequest
   ): Promise<UpdateDiaryEntryResponse> => {
-    return await put<UpdateDiaryEntryResponse>(`/diary/${userId}/${entryId}`, data);
+    try {
+      frontendLogger.info('Updating a diary entry', { userId, entryId, data });
+      const response = await put<UpdateDiaryEntryResponse>(`/diary/${userId}/${entryId}`, data);
+      frontendLogger.info('Updated a diary entry successfully', { userId, entryId });
+      return response;
+    } catch (error) {
+      frontendLogger.error('Error updating a diary entry', { userId, entryId, data, error });
+      throw error;
+    }
   },
 
   /**
@@ -88,7 +121,15 @@ const diaryService = {
    * @returns A promise resolving to a success message
    */
   deleteEntry: async (userId: number, entryId: number): Promise<DeleteDiaryEntryResponse> => {
-    return await del<DeleteDiaryEntryResponse>(`/diary/${userId}/${entryId}`);
+    try {
+      frontendLogger.info('Deleting a diary entry', { userId, entryId });
+      const response = await del<DeleteDiaryEntryResponse>(`/diary/${userId}/${entryId}`);
+      frontendLogger.info('Deleted a diary entry successfully', { userId, entryId });
+      return response;
+    } catch (error) {
+      frontendLogger.error('Error deleting a diary entry', { userId, entryId, error });
+      throw error;
+    }
   },
 };
 

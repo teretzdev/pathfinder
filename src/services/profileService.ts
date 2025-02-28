@@ -1,4 +1,5 @@
 import { get, put } from './api';
+import frontendLogger from '../utils/logger';
 
 // Define the types for the profile service
 interface UserProfile {
@@ -27,7 +28,15 @@ const profileService = {
    * @returns A promise resolving to the user profile
    */
   fetchProfile: async (userId: number): Promise<UserProfile> => {
-    return await get<UserProfile>(`/profile/${userId}`);
+    frontendLogger.info(`Fetching profile for user ID: ${userId}`);
+    try {
+      const profile = await get<UserProfile>(`/profile/${userId}`);
+      frontendLogger.info(`Successfully fetched profile for user ID: ${userId}`);
+      return profile;
+    } catch (error) {
+      frontendLogger.error(`Error fetching profile for user ID: ${userId}`, { error });
+      throw error;
+    }
   },
 
   /**
@@ -40,7 +49,15 @@ const profileService = {
     userId: number,
     data: UpdateProfileRequest
   ): Promise<UpdateProfileResponse> => {
-    return await put<UpdateProfileResponse>(`/profile/${userId}`, data);
+    frontendLogger.info(`Updating profile for user ID: ${userId}`, { data });
+    try {
+      const response = await put<UpdateProfileResponse>(`/profile/${userId}`, data);
+      frontendLogger.info(`Successfully updated profile for user ID: ${userId}`);
+      return response;
+    } catch (error) {
+      frontendLogger.error(`Error updating profile for user ID: ${userId}`, { error });
+      throw error;
+    }
   },
 };
 

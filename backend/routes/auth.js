@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -40,7 +41,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully.', token });
   } catch (error) {
-    console.error('Error during registration:', error);
+    logger.error('Error during registration:', { error });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -67,7 +68,7 @@ router.post('/login', async (req, res) => {
 
     res.status(200).json({ message: 'Login successful.', token });
   } catch (error) {
-    console.error('Error during login:', error);
+    logger.error('Error during login:', { error });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -92,7 +93,7 @@ router.get('/validate-token', async (req, res) => {
 
     res.status(200).json({ message: 'Token is valid.', user: { id: user.id, email: user.email, name: user.name } });
   } catch (error) {
-    console.error('Error during token validation:', error);
+    logger.error('Error during token validation:', { error });
     res.status(401).json({ message: 'Invalid or expired token.' });
   }
 });

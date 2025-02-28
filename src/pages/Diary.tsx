@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import diaryService from '../services/diaryService';
+import frontendLogger from '../utils/logger';
 
 interface DiaryEntry {
   date: string;
@@ -38,7 +39,7 @@ const Diary: React.FC = () => {
         const fetchedEntries = await diaryService.fetchAllEntries(userId);
         setEntries(fetchedEntries);
       } catch (error) {
-        console.error('Error fetching diary entries:', error);
+        frontendLogger.error('Error fetching diary entries:', { error });
       }
     };
 
@@ -55,7 +56,7 @@ const Diary: React.FC = () => {
         setFormData({ date: '', title: '', content: '' });
         setErrors({});
       } catch (error) {
-        console.error('Error creating diary entry:', error);
+        frontendLogger.error('Error creating diary entry:', { error });
       }
     }
   };

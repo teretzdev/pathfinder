@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import frontendLogger from '../utils/logger';
 
 // Base URL for API requests
 const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
@@ -12,12 +13,34 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// Interceptor to handle request errors
+// Interceptor to log requests
+apiClient.interceptors.request.use((config: AxiosRequestConfig) => {
+  frontendLogger.info('API Request', {
+    method: config.method,
+    url: config.url,
+    data: config.data,
+  });
+  return config;
+});
+
+// Interceptor to handle responses and log them
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    frontendLogger.info('API Response', {
+      method: response.config.method,
+      url: response.config.url,
+      status: response.status,
+      data: response.data,
+    });
+    return response;
+  },
   (error) => {
     // Log the error for debugging
-    console.error('API Error:', error);
+    frontendLogger.error('API Error', {
+      message: error.message,
+      config: error.config,
+      response: error.response,
+    });
 
     // Customize error handling
     if (error.response) {
