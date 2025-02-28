@@ -1,5 +1,6 @@
 import express from 'express';
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    logger.error('Error fetching user profile', { error: error.message, id });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -46,7 +47,7 @@ router.put('/:id', async (req, res) => {
 
     res.status(200).json({ message: 'Profile updated successfully.', user });
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    logger.error('Error updating user profile', { error: error.message, id });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });

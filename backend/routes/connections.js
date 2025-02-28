@@ -1,6 +1,7 @@
 import express from 'express';
 import Connection from '../models/Connection.js';
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ router.get('/:userId', async (req, res) => {
 
     res.status(200).json(connections);
   } catch (error) {
-    console.error('Error fetching connections:', error);
+    logger.error('Error fetching connections:', { error });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -54,7 +55,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({ message: 'Connection created successfully.', connection: newConnection });
   } catch (error) {
-    console.error('Error creating connection:', error);
+    logger.error('Error creating connection:', { error });
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
