@@ -59,6 +59,7 @@ export default sequelize;
 ### Final Output
 ```
 import { Sequelize } from 'sequelize';
+import logger from '../utils/logger.js';
 
 // Load environment variables from a .env file
 import dotenv from 'dotenv';
