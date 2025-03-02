@@ -1,104 +1,14 @@
 import React from 'react';
-import {
-  Chart as ChartJS,
-  RadarController,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Radar } from 'react-chartjs-2';
-
-// Register Chart.js components
-ChartJS.register(
-  RadarController,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend
-);
 
 const HumanDesignChart: React.FC = () => {
-  const labels = [
-    'Head',
-    'Ajna',
-    'Throat',
-    'G Center',
-    'Heart',
-    'Sacral',
-    'Solar Plexus',
-    'Root',
-    'Spleen',
-  ];
-
-  const calculateHumanDesignData = () =>
-    labels.map(() => Math.floor(Math.random() * 100) + 1);
-  const dataPoints = calculateHumanDesignData();
-
-  // Chart data
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: 'Human Design Insights',
-        data: dataPoints,
-        borderColor: '#4f46e5',
-        backgroundColor: 'rgba(79, 70, 229, 0.2)',
-        pointBackgroundColor: '#4f46e5',
-        pointBorderColor: '#ffffff',
-        pointHoverBackgroundColor: '#ffffff',
-        pointHoverBorderColor: '#4f46e5',
-      },
-    ],
-  };
-
-  // Chart options
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: '#ffffff', // White text for dark theme
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: (context: any) => `${context.raw}%`,
-        },
-      },
-    },
-    scales: {
-      r: {
-        ticks: {
-          color: '#ffffff',
-          backdropColor: 'transparent',
-        },
-        grid: {
-          color: '#3f3f3f',
-        },
-        angleLines: {
-          color: '#3f3f3f',
-        },
-        pointLabels: {
-          color: '#ffffff',
-        },
-      },
-    },
-  };
-
   return (
     <div className="bg-gray-800 p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-white mb-4">Human Design Chart</h2>
       <p className="text-gray-300 mb-6">
-        Explore insights into your unique human design based on key centers.
+        Your Human Design chart reveals your energetic blueprint and how you're designed to interact with the world.
       </p>
-      <div className="relative">
-        <Radar data={data} options={options} />
+      <div className="flex justify-center items-center h-64 bg-gray-700 rounded-lg">
+        <p className="text-gray-400">Human Design Chart Visualization</p>
       </div>
     </div>
   );
