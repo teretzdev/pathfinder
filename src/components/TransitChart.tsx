@@ -3,6 +3,7 @@ import React from 'react';
 /**
  * TransitChart Component
  * Displays a table of astrological transit information.
+ * This component renders a styled table with data about planetary transits.
  */
 
 interface Transit {
