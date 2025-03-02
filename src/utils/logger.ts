@@ -17,6 +17,8 @@ const logFormat = format.combine(
   })
 );
 
+type LogMeta = Record<string, unknown>;
+
 // Create logger instance
 const logger = createLogger({
   levels: logLevels,
@@ -33,16 +35,16 @@ const logger = createLogger({
  * Provides consistent logging with different log levels and context information.
  */
 const frontendLogger = {
-  error: (message: string, meta?: Record<string, unknown>) => {
+  error: (message: string, meta?: LogMeta) => {
     logger.log('error', message, meta);
   },
-  warn: (message: string, meta?: Record<string, unknown>) => {
+  warn: (message: string, meta?: LogMeta) => {
     logger.log('warn', message, meta);
   },
-  info: (message: string, meta?: Record<string, unknown>) => {
+  info: (message: string, meta?: LogMeta) => {
     logger.log('info', message, meta);
   },
-  debug: (message: string, meta?: Record<string, unknown>) => {
+  debug: (message: string, meta?: LogMeta) => {
     logger.log('debug', message, meta);
   },
 };

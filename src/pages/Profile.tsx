@@ -7,12 +7,14 @@ interface ProfileData {
   name: string;
   email: string;
   dateOfBirth: string;
+  bio: string;
 }
 
 const Profile: React.FC = () => {
   const [formData, setFormData] = useState<ProfileData>({
     name: 'John Doe',
     email: 'john.doe@example.com',
+    dateOfBirth: '',
     bio: 'Astrology enthusiast and lifelong learner.',
   });
 
