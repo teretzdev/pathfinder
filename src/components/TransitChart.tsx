@@ -23,6 +23,9 @@ const TransitChart: React.FC = () => {
   return (
     <div className="bg-gray-800 p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-white mb-4">Astrological Transits</h2>
+      <p className="text-gray-300 mb-4">
+        This table provides an overview of planetary transits and their astrological aspects.
+      </p>
       <table className="w-full text-left text-gray-300">
         <thead>
           <tr>
@@ -33,14 +36,24 @@ const TransitChart: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {transits.map((transit, index) => (
-            <tr key={index} className="hover:bg-gray-700">
-              <td className="py-2 px-4 border-b border-gray-700">{transit.planet}</td>
-              <td className="py-2 px-4 border-b border-gray-700">{transit.aspect}</td>
-              <td className="py-2 px-4 border-b border-gray-700">{transit.sign}</td>
-              <td className="py-2 px-4 border-b border-gray-700">{transit.date}</td>
-            </tr>
-          ))}
+          <tr className="hover:bg-gray-700">
+            <td className="py-2 px-4 border-b border-gray-700">Mars</td>
+            <td className="py-2 px-4 border-b border-gray-700">Conjunction</td>
+            <td className="py-2 px-4 border-b border-gray-700">Aries</td>
+            <td className="py-2 px-4 border-b border-gray-700">2023-10-01</td>
+          </tr>
+          <tr className="hover:bg-gray-700">
+            <td className="py-2 px-4 border-b border-gray-700">Venus</td>
+            <td className="py-2 px-4 border-b border-gray-700">Square</td>
+            <td className="py-2 px-4 border-b border-gray-700">Cancer</td>
+            <td className="py-2 px-4 border-b border-gray-700">2023-10-02</td>
+          </tr>
+          <tr className="hover:bg-gray-700">
+            <td className="py-2 px-4 border-b border-gray-700">Mercury</td>
+            <td className="py-2 px-4 border-b border-gray-700">Trine</td>
+            <td className="py-2 px-4 border-b border-gray-700">Leo</td>
+            <td className="py-2 px-4 border-b border-gray-700">2023-10-03</td>
+          </tr>
         </tbody>
       </table>
     </div>
