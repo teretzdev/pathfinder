@@ -1,5 +1,10 @@
 import React from 'react';
 
+/**
+ * TransitChart Component
+ * Displays a table of astrological transit information.
+ */
+
 interface Transit {
   planet: string;
   aspect: string;
