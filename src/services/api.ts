@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import frontendLogger from '../utils/logger';
 
 // Base URL for API requests
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Create a logger instance for API service
 const apiLogger = frontendLogger.child({ service: 'API' });
@@ -39,16 +39,18 @@ apiClient.interceptors.request.use((config: AxiosRequestConfig) => {
     url: config.url,
   });
   
-  // Log the request
-  requestLogger.http('API Request', {
-    baseURL: config.baseURL,
-    params: config.params,
-    data: config.data,
-    headers: {
-      ...config.headers,
-      Authorization: config.headers?.Authorization ? '**REDACTED**' : undefined
-    }
-  });
+  // Log the request (only in non-production)
+  if (import.meta.env.VITE_APP_ENV !== 'production') {
+    requestLogger.http('API Request', {
+      baseURL: config.baseURL,
+      params: config.params,
+      data: config.data,
+      headers: {
+        ...config.headers,
+        Authorization: config.headers?.Authorization ? '**REDACTED**' : undefined
+      }
+    });
+  }
   
   // Store the logger and start time in the config for use in the response interceptor
   (config as any).metadata = {
@@ -67,13 +69,15 @@ apiClient.interceptors.response.use(
     const { startTime, logger } = config.metadata || {};
     const duration = startTime ? Date.now() - startTime : undefined;
     
-    // Log the successful response
-    logger?.http('API Response', {
-      status: response.status,
-      statusText: response.statusText,
-      duration: duration ? `${duration}ms` : undefined,
-      data: response.data
-    });
+    // Log the successful response (only in non-production)
+    if (import.meta.env.VITE_APP_ENV !== 'production') {
+      logger?.http('API Response', {
+        status: response.status,
+        statusText: response.statusText,
+        duration: duration ? `${duration}ms` : undefined,
+        data: response.data
+      });
+    }
     
     return response;
   },

@@ -1,12 +1,16 @@
 import winston from 'winston';
 import path from 'path';
 import fs from 'fs';
+import config from '../config/index.js';
 
 // Ensure logs directory exists
 const logsDir = path.join(process.cwd(), 'logs');
 if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir);
 }
+
+// Get logging configuration
+const { level, format: logFormat, console: useConsole, filename, maxsize, maxFiles } = config.logging;
 
 // Define custom log levels with more granularity
 const logLevels = {
@@ -38,9 +42,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = process.env.NODE_ENV === 'development';
 const isTest = process.env.NODE_ENV === 'test';
 
-// Set default log level based on environment
-const defaultLogLevel = isProduction ? 'info' : isDevelopment ? 'debug' : 'warn';
-
 // Create custom format for structured logging
 const structuredFormat = winston.format.printf(({ timestamp, level, message, context = {}, ...meta }) => {
   // Combine context and meta
@@ -50,38 +51,45 @@ const structuredFormat = winston.format.printf(({ timestamp, level, message, con
   return `${timestamp} [${level.toUpperCase()}] ${message} ${metaString}`;
 });
 
-// Define log format
-const logFormat = winston.format.combine(
+// Define log format based on configuration
+const winstonFormat = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
   winston.format.errors({ stack: true }),
   winston.format.splat(),
   winston.format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
-  isProduction ? winston.format.json() : winston.format.colorize({ all: true }),
+  logFormat === 'json' ? winston.format.json() : winston.format.colorize({ all: true }),
   structuredFormat
 );
 
 // Define transports
-const transports = [
-  // Always log to console
-  new winston.transports.Console({
-    level: process.env.LOG_LEVEL || defaultLogLevel,
-  }),
-  
+const transports = [];
+
+// Add console transport if enabled
+if (useConsole) {
+  transports.push(
+    new winston.transports.Console({
+      level: level || 'info',
+    })
+  );
+}
+
+// Add file transports
+transports.push(
   // Log errors to a dedicated file
   new winston.transports.File({
     filename: path.join(logsDir, 'error.log'),
     level: 'error',
-    maxsize: 10485760, // 10MB
-    maxFiles: 5,
+    maxsize: maxsize || 10485760, // 10MB
+    maxFiles: maxFiles || 5,
     tailable: true
   }),
   
   // Log all output to a combined file
   new winston.transports.File({
-    filename: path.join(logsDir, 'combined.log'),
-    level: process.env.LOG_LEVEL || defaultLogLevel,
-    maxsize: 10485760, // 10MB
-    maxFiles: 5,
+    filename: filename || path.join(logsDir, 'combined.log'),
+    level: level || 'info',
+    maxsize: maxsize || 10485760, // 10MB
+    maxFiles: maxFiles || 5,
     tailable: true
   }),
   
@@ -89,16 +97,16 @@ const transports = [
   new winston.transports.File({
     filename: path.join(logsDir, 'http.log'),
     level: 'http',
-    maxsize: 10485760, // 10MB
-    maxFiles: 5,
+    maxsize: maxsize || 10485760, // 10MB
+    maxFiles: maxFiles || 5,
     tailable: true
   })
-];
+);
 
 // Create the logger instance
 const logger = winston.createLogger({
   levels: logLevels,
-  format: logFormat,
+  format: winstonFormat,
   transports,
   exitOnError: false, // Prevent the logger from exiting on error
   silent: isTest, // Disable logging during tests

@@ -14,6 +14,7 @@ class LogStorage {
   private static instance: LogStorage;
   private logs: LogEntry[] = [];
   private maxEntries: number = 1000;
+  private isProduction: boolean = import.meta.env.VITE_APP_ENV === 'production';
   
   private constructor() {
     // Private constructor to enforce singleton pattern
@@ -33,6 +34,11 @@ class LogStorage {
    * Add a log entry to storage
    */
   public addLog(entry: LogEntry): void {
+    // In production, only store errors and warnings
+    if (this.isProduction && !['error', 'warn'].includes(entry.level)) {
+      return;
+    }
+    
     this.logs.push(entry);
     
     // Keep logs under the maximum size
@@ -117,6 +123,13 @@ class LogStorage {
  */
 const initLogStorage = (): void => {
   const storage = LogStorage.getInstance();
+  
+  // In production, we might want to limit the log storage size
+  if (import.meta.env.VITE_APP_ENV === 'production') {
+    storage.setMaxEntries(500); // Store fewer logs in production
+  } else {
+    storage.setMaxEntries(1000);
+  }
   
   // Override console methods to capture logs
   const originalConsoleLog = console.log;
@@ -221,7 +234,10 @@ const initLogStorage = (): void => {
   };
   
   // Log that we've initialized the storage
-  frontendLogger.info('Log storage initialized', { maxEntries: storage.setMaxEntries });
+  frontendLogger.info('Log storage initialized', { 
+    maxEntries: import.meta.env.VITE_APP_ENV === 'production' ? 500 : 1000,
+    environment: import.meta.env.VITE_APP_ENV
+  });
 };
 
 /**

@@ -21,11 +21,12 @@ const logColors = {
 };
 
 // Determine the current environment
-const isProduction = process.env.NODE_ENV === 'production';
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isProduction = import.meta.env.VITE_APP_ENV === 'production';
+const isDevelopment = import.meta.env.VITE_APP_ENV === 'development';
 
 // Set default log level based on environment
 const defaultLogLevel = isProduction ? 'info' : isDevelopment ? 'debug' : 'warn';
+const logLevel = import.meta.env.VITE_LOG_LEVEL || defaultLogLevel;
 
 // Create custom format for structured logging
 const structuredFormat = format.printf(({ timestamp, level, message, context = {}, ...meta }) => {
@@ -42,7 +43,7 @@ const logFormat = format.combine(
   format.errors({ stack: true }),
   format.splat(),
   format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
-  format.colorize({ all: true }),
+  isProduction ? format.json() : format.colorize({ all: true }),
   structuredFormat
 );
 
@@ -52,13 +53,22 @@ const winstonLogger = createLogger({
   format: logFormat,
   transports: [
     new transports.Console({
-      level: process.env.VITE_LOG_LEVEL || defaultLogLevel,
+      level: logLevel,
     }),
   ],
 });
 
 // Browser-specific console logging with styling
 const browserLog = (level: string, message: string, meta: Record<string, unknown> = {}) => {
+  // Skip logs that are below the configured level
+  const levels = Object.keys(logLevels);
+  const configuredLevelIndex = levels.indexOf(logLevel);
+  const currentLevelIndex = levels.indexOf(level);
+  
+  if (currentLevelIndex > configuredLevelIndex) {
+    return; // Skip this log
+  }
+  
   const timestamp = new Date().toISOString();
   const metaString = Object.keys(meta).length ? JSON.stringify(meta, null, 2) : '';
   
@@ -71,6 +81,11 @@ const browserLog = (level: string, message: string, meta: Record<string, unknown
     debug: 'color: #2196F3; font-weight: bold',
     trace: 'color: #00BCD4; font-weight: bold',
   };
+  
+  // In production, only log errors and warnings to console
+  if (isProduction && !['error', 'warn'].includes(level)) {
+    return;
+  }
   
   // Log to browser console with styling
   if (level === 'error') {
@@ -116,7 +131,10 @@ const createContextLogger = (context: Record<string, unknown> = {}) => {
 };
 
 // Create the default logger
-const frontendLogger = createContextLogger();
+const frontendLogger = createContextLogger({
+  environment: import.meta.env.VITE_APP_ENV,
+  version: import.meta.env.VITE_APP_VERSION || '1.0.0'
+});
 
 // Export both the default logger and the factory function
 export default frontendLogger;

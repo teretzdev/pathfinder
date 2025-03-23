@@ -15,7 +15,11 @@ const App: React.FC = () => {
   
   // Check for token on initial load
   useEffect(() => {
-    frontendLogger.info('App initializing', { timestamp: new Date().toISOString() });
+    frontendLogger.info('App initializing', { 
+      environment: import.meta.env.VITE_APP_ENV,
+      timestamp: new Date().toISOString() 
+    });
+    
     const token = localStorage.getItem('token');
     if (token) {
       frontendLogger.info('User token found, setting authenticated state');
@@ -38,10 +42,16 @@ const App: React.FC = () => {
     setIsAuthenticated(false);
   };
 
+  // Only show DevTools in non-production environments
+  const showDevTools = import.meta.env.VITE_APP_ENV !== 'production';
+
   return (
-    <LoggerProvider context={{ appVersion: '1.0.0' }}>
+    <LoggerProvider context={{ 
+      appVersion: import.meta.env.VITE_APP_VERSION || '1.0.0',
+      environment: import.meta.env.VITE_APP_ENV
+    }}>
       <Router>
-        {isAuthenticated && <Navbar onLogout={handleLogout} />}
+        {isAuthenticated && <Navbar onLogout={handleLogout} showDevTools={showDevTools} />}
         <Routes>
           <Route path="/login" element={
             isAuthenticated ? 
@@ -61,10 +71,12 @@ const App: React.FC = () => {
             path="/diary" 
             element={isAuthenticated ? <Diary /> : <Navigate to="/login" />} 
           />
-          <Route 
-            path="/dev-tools" 
-            element={isAuthenticated ? <DevTools /> : <Navigate to="/login" />} 
-          />
+          {showDevTools && (
+            <Route 
+              path="/dev-tools" 
+              element={isAuthenticated ? <DevTools /> : <Navigate to="/login" />} 
+            />
+          )}
           <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
         </Routes>
       </Router>
