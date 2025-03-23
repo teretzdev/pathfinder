@@ -3,32 +3,64 @@ import cors from 'cors';
 import logger from './utils/logger.js';
 import requestLogger from './middleware/requestLogger.js';
 import errorHandler from './middleware/errorHandler.js';
+import setupCompression from './middleware/compression.js';
+import setupSecurity from './middleware/security.js';
+import setupRateLimit from './middleware/rateLimit.js';
 import AppError from './utils/AppError.js';
 import authRoutes from './routes/authRoutes.js';
+import healthRoutes from './routes/healthRoutes.js';
 import config from './config/index.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Create an Express application
 const app = express();
 
 // Get server configuration
 const { port, host, cors: corsOptions } = config.server;
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Apply security middleware
+app.use(setupSecurity());
+
+// Apply rate limiting (except for health checks)
+app.use(/^(?!\/api\/health).*$/, setupRateLimit());
+
+// Apply compression middleware
+app.use(setupCompression());
 
 // Middleware
 app.use(express.json()); // Parse JSON request bodies
 app.use(cors(corsOptions)); // Enable Cross-Origin Resource Sharing
 app.use(requestLogger); // Log HTTP requests
 
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/health', healthRoutes);
 
-// Basic route
-app.get('/', (req, res) => {
-  req.logger.info('Home route accessed');
-  res.send('Backend server is running!');
-});
+// Serve static files from the React app in production
+if (isProduction) {
+  const distPath = path.resolve(__dirname, '..', 'dist');
+  logger.info(`Serving static files from: ${distPath}`);
+  
+  app.use(express.static(distPath));
+  
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+} else {
+  // Basic route for development
+  app.get('/', (req, res) => {
+    req.logger.info('Home route accessed');
+    res.send('Backend server is running!');
+  });
 
-// Test route for different log levels (only in development)
-if (process.env.NODE_ENV !== 'production') {
+  // Test route for different log levels (only in development)
   app.get('/api/test-logs', (req, res) => {
     const logger = req.logger.child({ component: 'LogTest' });
     
