@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useLogger from '../utils/useLogger';
-
-interface LogEntry {
-  level: string;
-  message: string;
-  timestamp: string;
-  meta: Record<string, unknown>;
-}
+import { LogStorage, LogEntry, exportLogs } from '../utils/logExporter';
 
 interface LogViewerProps {
   maxEntries?: number;
@@ -17,42 +11,35 @@ const LogViewer: React.FC<LogViewerProps> = ({ maxEntries = 100 }) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [filter, setFilter] = useState<string>('');
   const [levelFilter, setLevelFilter] = useState<string>('all');
+  const [autoRefresh, setAutoRefresh] = useState<boolean>(true);
   
-  // Subscribe to log events
+  // Get logs from storage
   useEffect(() => {
     logger.info('LogViewer component mounted');
     
-    // This is a mock implementation since we can't directly subscribe to logger events
-    // In a real implementation, you would use a custom event system or WebSocket
-    const mockLogListener = (event: CustomEvent<LogEntry>) => {
-      setLogs(prevLogs => {
-        const newLogs = [...prevLogs, event.detail];
-        // Keep only the most recent logs
-        return newLogs.slice(-maxEntries);
-      });
-    };
+    // Initialize log storage
+    const storage = LogStorage.getInstance();
+    storage.setMaxEntries(maxEntries);
     
-    // Create a custom event for logging
-    const logEvent = new CustomEvent('log', {
-      detail: {
-        level: 'info',
-        message: 'LogViewer initialized',
-        timestamp: new Date().toISOString(),
-        meta: { component: 'LogViewer' }
-      }
-    });
+    // Initial load of logs
+    setLogs(storage.getLogs());
     
-    // Dispatch the event
-    window.dispatchEvent(logEvent);
+    // Set up auto-refresh if enabled
+    let intervalId: number | undefined;
     
-    // Add event listener
-    window.addEventListener('log' as any, mockLogListener);
+    if (autoRefresh) {
+      intervalId = window.setInterval(() => {
+        setLogs(storage.getLogs());
+      }, 1000) as unknown as number;
+    }
     
     return () => {
       logger.info('LogViewer component unmounted');
-      window.removeEventListener('log' as any, mockLogListener);
+      if (intervalId) {
+        window.clearInterval(intervalId);
+      }
     };
-  }, [logger, maxEntries]);
+  }, [logger, maxEntries, autoRefresh]);
   
   // Filter logs based on search and level
   const filteredLogs = logs.filter(log => {
@@ -76,6 +63,20 @@ const LogViewer: React.FC<LogViewerProps> = ({ maxEntries = 100 }) => {
       case 'trace': return 'text-cyan-500';
       default: return 'text-gray-500';
     }
+  };
+  
+  // Handle log export
+  const handleExport = (format: 'json' | 'csv') => {
+    logger.info(`Exporting logs in ${format} format`);
+    exportLogs(format);
+  };
+  
+  // Clear logs
+  const handleClearLogs = () => {
+    logger.info('Clearing logs');
+    const storage = LogStorage.getInstance();
+    storage.clearLogs();
+    setLogs([]);
   };
   
   return (
@@ -104,10 +105,38 @@ const LogViewer: React.FC<LogViewerProps> = ({ maxEntries = 100 }) => {
             <option value="trace">Trace</option>
           </select>
           <button
-            onClick={() => setLogs([])}
+            onClick={handleClearLogs}
             className="px-2 py-1 bg-gray-800 text-white border border-gray-700 rounded text-sm hover:bg-gray-700"
           >
             Clear
+          </button>
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="autoRefresh"
+            checked={autoRefresh}
+            onChange={(e) => setAutoRefresh(e.target.checked)}
+            className="mr-2"
+          />
+          <label htmlFor="autoRefresh" className="text-sm text-gray-300">Auto-refresh</label>
+        </div>
+        
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleExport('json')}
+            className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+          >
+            Export JSON
+          </button>
+          <button
+            onClick={() => handleExport('csv')}
+            className="px-2 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+          >
+            Export CSV
           </button>
         </div>
       </div>

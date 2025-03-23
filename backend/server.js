@@ -4,6 +4,7 @@ import logger from './utils/logger.js';
 import requestLogger from './middleware/requestLogger.js';
 import errorHandler from './middleware/errorHandler.js';
 import AppError from './utils/AppError.js';
+import authRoutes from './routes/authRoutes.js';
 
 // Create an Express application
 const app = express();
@@ -12,6 +13,9 @@ const app = express();
 app.use(express.json()); // Parse JSON request bodies
 app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(requestLogger); // Log HTTP requests
+
+// Routes
+app.use('/api/auth', authRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

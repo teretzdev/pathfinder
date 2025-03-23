@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import LogViewer from '../components/LogViewer';
 import useLogger from '../utils/useLogger';
+import { exportLogs } from '../utils/logExporter';
 
 const DevTools: React.FC = () => {
   const logger = useLogger('DevTools');
@@ -87,6 +88,12 @@ const DevTools: React.FC = () => {
     });
   };
   
+  // Export logs
+  const handleExportLogs = (format: 'json' | 'csv') => {
+    logger.info(`Exporting logs in ${format} format`);
+    exportLogs(format);
+  };
+  
   return (
     <Layout>
       <div className="space-y-8">
@@ -153,6 +160,24 @@ const DevTools: React.FC = () => {
         <section className="bg-gray-800 p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-4">Log Viewer</h2>
           <LogViewer maxEntries={100} />
+        </section>
+        
+        <section className="bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold mb-4">Log Export</h2>
+          <div className="flex space-x-4">
+            <button
+              onClick={() => handleExportLogs('json')}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Export as JSON
+            </button>
+            <button
+              onClick={() => handleExportLogs('csv')}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
+              Export as CSV
+            </button>
+          </div>
         </section>
       </div>
     </Layout>
