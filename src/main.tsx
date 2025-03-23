@@ -5,9 +5,13 @@ import './index.css';
 import { initLogStorage } from './utils/logExporter';
 import frontendLogger from './utils/logger';
 import * as serviceWorker from './serviceWorker';
+import { initPerformanceMonitoring } from './utils/performance';
 
 // Initialize log storage
 initLogStorage();
+
+// Initialize performance monitoring
+initPerformanceMonitoring();
 
 frontendLogger.info('Application starting', {
   version: import.meta.env.VITE_APP_VERSION || '1.0.0',

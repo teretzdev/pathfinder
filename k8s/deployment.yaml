@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pathfinder
+  labels:
+    app: pathfinder
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pathfinder
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: pathfinder
+    spec:
+      containers:
+      - name: pathfinder
+        image: ${DOCKER_REGISTRY}/pathfinder:${IMAGE_TAG}
+        ports:
+        - containerPort: 5000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "5000"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pathfinder-secrets
+              key: jwt-secret
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: pathfinder-config
+              key: db-host
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: pathfinder-config
+              key: db-port
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: pathfinder-config
+              key: db-name
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: pathfinder-secrets
+              key: db-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pathfinder-secrets
+              key: db-password
+        - name: CORS_ORIGIN
+          valueFrom:
+            configMapKeyRef:
+              name: pathfinder-config
+              key: cors-origin
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: logs
+        emptyDir: {}

@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import DevTools from './pages/DevTools';
 import Navbar from './components/Navbar';
+import PerformanceTracker from './components/PerformanceTracker';
 import { LoggerProvider } from './utils/useLogger';
 import frontendLogger from './utils/logger';
 
@@ -51,6 +52,7 @@ const App: React.FC = () => {
       environment: import.meta.env.VITE_APP_ENV
     }}>
       <Router>
+        <PerformanceTracker />
         {isAuthenticated && <Navbar onLogout={handleLogout} showDevTools={showDevTools} />}
         <Routes>
           <Route path="/login" element={
