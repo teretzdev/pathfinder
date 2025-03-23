@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import useLogger from '../utils/useLogger';
 
 interface DiaryEntry {
   id?: number;
@@ -9,6 +10,8 @@ interface DiaryEntry {
 }
 
 const Diary: React.FC = () => {
+  const logger = useLogger('Diary');
+  
   const [entries, setEntries] = useState<DiaryEntry[]>([
     {
       id: 1,
@@ -31,33 +34,58 @@ const Diary: React.FC = () => {
   });
   const [errors, setErrors] = useState<Partial<DiaryEntry>>({});
 
+  useEffect(() => {
+    logger.info('Diary component mounted', { entriesCount: entries.length });
+    
+    return () => {
+      logger.info('Diary component unmounted');
+    };
+  }, [logger, entries.length]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    logger.debug('Form field changed', { field: name, value });
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateForm = (): boolean => {
+    logger.debug('Validating form', { formData });
     const newErrors: Partial<DiaryEntry> = {};
     if (!formData.date) newErrors.date = 'Date is required.';
     if (!formData.title) newErrors.title = 'Title is required.';
     if (!formData.content) newErrors.content = 'Content is required.';
+    
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    
+    const isValid = Object.keys(newErrors).length === 0;
+    logger.debug('Form validation result', { isValid, errors: newErrors });
+    return isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    logger.info('Diary entry form submitted');
+    
     if (validateForm()) {
+      logger.info('Creating new diary entry', { title: formData.title });
+      
       // For preview purposes, we'll just add the entry to the state
       const newEntry = {
         ...formData,
         id: entries.length + 1
       };
+      
       setEntries((prev) => [...prev, newEntry]);
       setFormData({ date: '', title: '', content: '' });
       setErrors({});
+      
+      logger.info('New diary entry created successfully', { entryId: newEntry.id });
+    } else {
+      logger.warn('Diary entry form has validation errors');
     }
   };
+
+  logger.trace('Rendering Diary component');
 
   return (
     <Layout>
