@@ -1,6 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import logger from '../utils/logger.js';
+import logger from './utils/logger.js';
+import authRoutes from './routes/auth.js';
+import profileRoutes from './routes/profile.js';
+import connectionsRoutes from './routes/connections.js';
+import diaryRoutes from './routes/diary.js';
+import deviceRoutes from './routes/devices.js';
+import deviceDataRoutes from './routes/deviceData.js';
+import { Op } from 'sequelize';
 
 // Create an Express application
 const app = express();
@@ -18,55 +25,17 @@ app.use((req, res, next) => {
   next();
 }); // Log HTTP requests using logger
 
-// Basic route
-app.get('/', (req, res) => {
-  res.send('Backend server is running!');
-});
-
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  logger.info(`Server is running on http://localhost:${PORT}`);
-});
-```
-
-### Step 4: Review the Code
-1. **Functionality**:
-   - The server is initialized using Express.js.
-   - Middleware for JSON parsing, CORS, and logging is included.
-   - A basic route (`GET /`) is set up to confirm the server is running.
-   - The server listens on a specified port and logs a message when it starts.
-
-2. **Conventions**:
-   - The code uses ES6 module syntax (`import`/`export`).
-   - Middleware is applied in the correct order.
-   - The port is configurable via the `PORT` environment variable.
-
-3. **Completeness**:
-   - The file is fully functional and does not contain placeholders or TODOs.
-   - All required functionality is implemented.
-
-4. **Validation**:
-   - The code is valid and runnable.
-   - It adheres to the instructions and fulfills the assignment requirements.
-
-### Final Output
-```
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-
-// Create an Express application
-const app = express();
-
-// Middleware
-app.use(express.json()); // Parse JSON request bodies
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-app.use(morgan('dev')); // Log HTTP requests
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/connections', connectionsRoutes);
+app.use('/api/diary', diaryRoutes);
+app.use('/api/devices', deviceRoutes);
+app.use('/api/device-data', deviceDataRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
-  res.send('Backend server is running!');
+  res.send('Pathfinder backend server is running!');
 });
 
 // Start the server
