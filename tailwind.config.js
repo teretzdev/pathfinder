@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: 'class', // Enable dark mode using the 'class' strategy
   content: [
     './index.html', // Include the index.html file for Tailwind CSS processing

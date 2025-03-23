@@ -1,10 +1,39 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '../components/Layout';
 import BiorhythmChart from '../components/BiorhythmChart';
 import HumanDesignChart from '../components/HumanDesignChart';
 import TransitChart from '../components/TransitChart';
+import useLogger from '../utils/useLogger';
 
 const Dashboard: React.FC = () => {
+  const logger = useLogger('Dashboard');
+  
+  useEffect(() => {
+    logger.info('Dashboard component mounted');
+    
+    // Log performance metrics
+    const performanceMetrics = {
+      memory: window.performance.memory ? {
+        jsHeapSizeLimit: Math.round(window.performance.memory.jsHeapSizeLimit / (1024 * 1024)),
+        totalJSHeapSize: Math.round(window.performance.memory.totalJSHeapSize / (1024 * 1024)),
+        usedJSHeapSize: Math.round(window.performance.memory.usedJSHeapSize / (1024 * 1024))
+      } : 'Not available',
+      timing: {
+        navigationStart: window.performance.timing.navigationStart,
+        loadEventEnd: window.performance.timing.loadEventEnd,
+        loadTime: window.performance.timing.loadEventEnd - window.performance.timing.navigationStart
+      }
+    };
+    
+    logger.debug('Performance metrics', performanceMetrics);
+    
+    return () => {
+      logger.info('Dashboard component unmounted');
+    };
+  }, [logger]);
+
+  logger.trace('Rendering Dashboard component');
+
   return (
     <Layout>
       <div className="space-y-8">

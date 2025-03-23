@@ -1,16 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import diaryService from '../services/diaryService';
-import frontendLogger from '../utils/logger';
+import useLogger from '../utils/useLogger';
 
 interface DiaryEntry {
+  id?: number;
   date: string;
   title: string;
   content: string;
 }
 
 const Diary: React.FC = () => {
-  const [entries, setEntries] = useState<DiaryEntry[]>([]);
+  const logger = useLogger('Diary');
+  
+  const [entries, setEntries] = useState<DiaryEntry[]>([
+    {
+      id: 1,
+      date: '2023-10-15',
+      title: 'Unexpected Synchronicity',
+      content: 'Today I was thinking about an old friend I hadn\'t seen in years, and then received a message from them minutes later. The universe works in mysterious ways.'
+    },
+    {
+      id: 2,
+      date: '2023-10-12',
+      title: 'Recurring Number Pattern',
+      content: 'I\'ve been seeing 11:11 on clocks for the past week. Today I received an invoice with the total $111.10. This pattern feels significant.'
+    }
+  ]);
+  
   const [formData, setFormData] = useState<DiaryEntry>({
     date: '',
     title: '',
@@ -18,48 +34,58 @@ const Diary: React.FC = () => {
   });
   const [errors, setErrors] = useState<Partial<DiaryEntry>>({});
 
+  useEffect(() => {
+    logger.info('Diary component mounted', { entriesCount: entries.length });
+    
+    return () => {
+      logger.info('Diary component unmounted');
+    };
+  }, [logger, entries.length]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    logger.debug('Form field changed', { field: name, value });
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateForm = (): boolean => {
+    logger.debug('Validating form', { formData });
     const newErrors: Partial<DiaryEntry> = {};
     if (!formData.date) newErrors.date = 'Date is required.';
     if (!formData.title) newErrors.title = 'Title is required.';
     if (!formData.content) newErrors.content = 'Content is required.';
+    
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    
+    const isValid = Object.keys(newErrors).length === 0;
+    logger.debug('Form validation result', { isValid, errors: newErrors });
+    return isValid;
   };
-
-  useEffect(() => {
-    const fetchEntries = async () => {
-      try {
-        const userId = 1; // Replace with actual user ID
-        const fetchedEntries = await diaryService.fetchAllEntries(userId);
-        setEntries(fetchedEntries);
-      } catch (error) {
-        frontendLogger.error('Error fetching diary entries:', { error });
-      }
-    };
-
-    fetchEntries();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    logger.info('Diary entry form submitted');
+    
     if (validateForm()) {
-      try {
-        const userId = 1; // Replace with actual user ID
-        const newEntry = await diaryService.createEntry({ ...formData, userId });
-        setEntries((prev) => [...prev, newEntry.entry]);
-        setFormData({ date: '', title: '', content: '' });
-        setErrors({});
-      } catch (error) {
-        frontendLogger.error('Error creating diary entry:', { error });
-      }
+      logger.info('Creating new diary entry', { title: formData.title });
+      
+      // For preview purposes, we'll just add the entry to the state
+      const newEntry = {
+        ...formData,
+        id: entries.length + 1
+      };
+      
+      setEntries((prev) => [...prev, newEntry]);
+      setFormData({ date: '', title: '', content: '' });
+      setErrors({});
+      
+      logger.info('New diary entry created successfully', { entryId: newEntry.id });
+    } else {
+      logger.warn('Diary entry form has validation errors');
     }
   };
+
+  logger.trace('Rendering Diary component');
 
   return (
     <Layout>
@@ -119,7 +145,7 @@ const Diary: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             Add Entry
           </button>
@@ -131,14 +157,14 @@ const Diary: React.FC = () => {
             <p className="text-gray-400">You have no diary entries yet. Use the form above to add your first entry and start tracking your synchronicities!</p>
           ) : (
             <ul className="space-y-4">
-              {entries.map((entry, index) => (
+              {entries.map((entry) => (
                 <li
-                  key={index}
+                  key={entry.id}
                   className="bg-gray-800 p-4 rounded-lg shadow-md"
                 >
                   <h3 className="text-xl font-bold text-white">{entry.title}</h3>
                   <p className="text-sm text-gray-400">{entry.date}</p>
-                  <p className="text-gray-300">{entry.content}</p>
+                  <p className="text-gray-300 mt-2">{entry.content}</p>
                 </li>
               ))}
             </ul>
