@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 
-const Register: React.FC = () => {
+interface RegisterProps {
+  onRegisterSuccess?: () => void;
+}
+
+const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -32,11 +36,21 @@ const Register: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const { name, email, password, dateOfBirth } = formData;
-      const response = await authService.register(name, email, password, dateOfBirth);
+      // For preview purposes, we'll simulate a successful registration
+      // In a real app, you would use the authService
+      // const { name, email, password, dateOfBirth } = formData;
+      // const response = await authService.register(name, email, password, dateOfBirth);
+      
+      // Simulate API response
+      const mockToken = "mock-jwt-token-for-preview";
       
       // Store token in localStorage
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('token', mockToken);
+      
+      // Call the onRegisterSuccess callback if provided
+      if (onRegisterSuccess) {
+        onRegisterSuccess();
+      }
       
       // Redirect to dashboard
       navigate('/dashboard');

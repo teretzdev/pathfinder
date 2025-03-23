@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 
-const Login: React.FC = () => {
+interface LoginProps {
+  onLoginSuccess?: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -22,11 +26,21 @@ const Login: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const { email, password } = formData;
-      const response = await authService.login(email, password);
+      // For preview purposes, we'll simulate a successful login
+      // In a real app, you would use the authService
+      // const { email, password } = formData;
+      // const response = await authService.login(email, password);
+      
+      // Simulate API response
+      const mockToken = "mock-jwt-token-for-preview";
       
       // Store token in localStorage
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('token', mockToken);
+      
+      // Call the onLoginSuccess callback if provided
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
       
       // Redirect to dashboard
       navigate('/dashboard');
